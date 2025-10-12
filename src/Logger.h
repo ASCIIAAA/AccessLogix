@@ -10,4 +10,4 @@ public:
     void logError(const char* message);
 };
 
-#endif
+#endif  
