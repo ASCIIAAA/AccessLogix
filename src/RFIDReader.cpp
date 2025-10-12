@@ -1,68 +1,59 @@
 // src/RFIDReader.cpp
 
 #include "RFIDReader.h"
-#include "Arduino.h" // Needed for Serial.print functions
 #include <Arduino.h>
 
-// src/RFIDReader.cpp
+// Define the pins here, as they are specific to the hardware this class controls
+#define SS_PIN 10
+#define RST_PIN 9
 
-// Constructor: Initializes the MFRC522 object with the defined pins
-// NOTE: RFID_SS_PIN and RFID_RST_PIN are available because Config.h is included in RFIDReader.h
-RFIDReader::RFIDReader() : rfid(RFID_SS_PIN, RFID_RST_PIN) { 
-    // Note: SPI and PCD_Init must be called in init()
+// Constructor: Initializes the MFRC522 object with the correct pins
+RFIDReader::RFIDReader() : mfrc522(SS_PIN, RST_PIN) {
+    // The ": mfrc522(SS_PIN, RST_PIN)" part is the C++ "initializer list".
+    // It's the proper way to initialize member objects like mfrc522.
 }
-// ... rest of the file
 
-// Initialization function
+// init(): This is where the communication starts.
 void RFIDReader::init() {
-    SPI.begin();
-    rfid.PCD_Init();
-    Serial.println("RFID Reader Initialized.");
+    SPI.begin();   
+    delay(50);       // <<<--- CRITICAL: Start the SPI bus
+    mfrc522.PCD_Init();   // <<<--- CRITICAL: Initialize the reader AFTER SPI is running
 }
 
-// Function to read the card
+// Dumps the firmware version to serial for debugging
+void RFIDReader::dumpVersionToSerial() {
+    mfrc522.PCD_DumpVersionToSerial();
+}
+
+// Checks for a new card and reads its UID
 bool RFIDReader::readCard() {
-    // Check for new card and read its serial (UID)
-    if (!rfid.PICC_IsNewCardPresent() || !rfid.PICC_ReadCardSerial()) {
-        return false; // No new card or failed to read
+    if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+        // A card has been read successfully
+        return true;
     }
-
-    // A card was read successfully. Copy the UID to the internal buffer.
-    for (byte i = 0; i < rfid.uid.size; i++) {
-        currentUID[i] = rfid.uid.uidByte[i];
-    }
-    currentUID[rfid.uid.size] = '\0'; // Null-terminate if treated as string (optional for byte array)
-
-    // Halt the PICC (card) to deselect it, ready for the next reading
-    rfid.PICC_HaltA();
-    rfid.PCD_StopCrypto1();
-
-    return true; // Successfully read card
+    return false;
 }
 
-// Returns the pointer to the last read UID
+void RFIDReader::haltCard() {
+    mfrc522.PICC_HaltA();      // Halt the card
+    mfrc522.PCD_StopCrypto1(); // Stop encryption (good practice)
+}
+
+// Returns a pointer to the UID stored in the library
 byte* RFIDReader::getUID() {
-    return currentUID;
+    return mfrc522.uid.uidByte;
 }
 
-// Returns the size of the last read UID (needed for print and comparison)
+// Returns the size of the UID
 byte RFIDReader::getUIDSize() {
-    return rfid.uid.size;
+    return mfrc522.uid.size;
 }
 
-// Debug utility: prints UID
+// Helper function to print the UID nicely
 void RFIDReader::printUID(byte *buffer, byte bufferSize) {
     for (byte i = 0; i < bufferSize; i++) {
-        if (buffer[i] < 0x10) {
-            Serial.print("0");
-        }
+        Serial.print(buffer[i] < 0x10 ? " 0" : " ");
         Serial.print(buffer[i], HEX);
-        Serial.print(" ");
     }
     Serial.println();
-}
-
-// Debug utility: prints firmware version
-void RFIDReader::dumpVersionToSerial() {
-    rfid.PCD_DumpVersionToSerial();
 }

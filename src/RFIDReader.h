@@ -1,39 +1,25 @@
-// src/RFIDReader.h
+// include/RFIDReader.h
 
-#ifndef RFIDREADER_H
-#define RFIDREADER_H
+#ifndef RFID_READER_H
+#define RFID_READER_H
 
+// These two includes are required here
 #include <SPI.h>
 #include <MFRC522.h>
-#include "Config.h" // For pin definitions and UID size
 
 class RFIDReader {
-private:
-    MFRC522 rfid;
-    byte currentUID[10]; // Buffer to hold the currently read UID (max 10 bytes)
-
 public:
-    // Constructor
-    RFIDReader();
-
-    // Initializes the SPI bus and the MFRC522 module
+    RFIDReader(); // Constructor
     void init();
-
-    // Checks for a new card and reads its UID if present
-    // Returns true if a new, valid UID was read and stored in currentUID
     bool readCard();
-
-    // Returns the pointer to the last read UID
-    byte* getUID();
-
-    // Utility function to print the UID to Serial Monitor for debugging
-    void printUID(byte *buffer, byte bufferSize);
-
-    // Utility function to get the current UID size
-    byte getUIDSize();
-    
-    // Utility for troubleshooting (like the one we used before)
+    void haltCard(); 
     void dumpVersionToSerial();
+    void printUID(byte *buffer, byte bufferSize);
+    byte* getUID();
+    byte getUIDSize();
+
+private:
+    MFRC522 mfrc522; // The MFRC522 object is a member of the class
 };
 
-#endif // RFIDREADER_H
+#endif // RFID_READER_H
