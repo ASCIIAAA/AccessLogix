@@ -4,7 +4,7 @@
 #include "RFIDReader.h"
 #include "LcdDisplay.h"
 #include "RTCClock.h"
-#include "KeypadReader.h" // <-- Include the new Keypad class header
+#include "KeypadReader.h" 
 
 // --- System State Enum ---
 enum SystemState {
@@ -19,7 +19,7 @@ SystemState currentState = WAITING_FOR_CARD;
 RFIDReader rfidReader;
 LcdDisplay lcd;
 RTCClock rtcClock;
-KeypadReader keypad; // <-- Create an instance of the Keypad class
+KeypadReader keypad; 
 
 // --- Pin Definitions (UPDATED PINS) ---
 #define GREEN_LED A0
@@ -34,10 +34,35 @@ String enteredPin = "";
 unsigned long pinEntryStartTime = 0;
 const unsigned long PIN_TIMEOUT = 10000; // 10 seconds to enter PIN
 
-// ... (signalGrant, signalDeny functions remain the same, just use the new pins) ...
-// Make sure to update the pin numbers inside these functions if you didn't use defines
-void signalGrant() { /* ... */ }
-void signalDeny() { /* ... */ }
+// --- 
+// 
+// THIS IS THE FIXED CODE
+// 
+// ---
+void signalGrant() {
+    // Blink green LED 3 times quickly for "Access Granted"
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(GREEN_LED, HIGH);
+        digitalWrite(BUZZER, HIGH); 
+        delay(75);
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(BUZZER, LOW);  
+        delay(100);
+    }
+}
+
+void signalDeny() {
+    // Blink red LED and beep buzzer twice for "Access Denied"
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(RED_LED, HIGH);
+        digitalWrite(BUZZER, HIGH); 
+        delay(250); 
+        digitalWrite(RED_LED, LOW);
+        digitalWrite(BUZZER, LOW);  
+        delay(300);
+    }
+}
+// --- END OF FIX ---
 
 
 bool checkCard(byte *scannedUID, byte scannedSize) {
@@ -85,7 +110,7 @@ void handleCardScan() {
         } else {
             Serial.println("Card Denied!");
             lcd.showMessage("Card Denied!", "");
-            signalDeny();
+            signalDeny(); // <-- This will now call the fixed function
             delay(2000);
             resetToReadyState();
         }
@@ -98,7 +123,7 @@ void handlePinEntry() {
     if (millis() - pinEntryStartTime > PIN_TIMEOUT) {
         Serial.println("PIN entry timed out!");
         lcd.showMessage("Timeout!", "");
-        signalDeny();
+        signalDeny(); // <-- This will now call the fixed function
         delay(2000);
         resetToReadyState();
         return;
@@ -143,7 +168,7 @@ void loop() {
         case ACCESS_GRANTED:
             Serial.println("Access Granted! 🟢");
             lcd.showMessage("Access Granted!", rtcClock.getFormattedTime().c_str());
-            signalGrant();
+            signalGrant(); // <-- This will now call the fixed function
             delay(3000);
             resetToReadyState();
             break;
@@ -151,7 +176,7 @@ void loop() {
         case ACCESS_DENIED:
             Serial.println("Access Denied! 🔴");
             lcd.showMessage("Access Denied!", "Wrong PIN");
-            signalDeny();
+            signalDeny(); // <-- This will now call the fixed function
             delay(3000);
             resetToReadyState();
             break;

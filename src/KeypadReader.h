@@ -1,4 +1,3 @@
-// include/KeypadReader.h
 
 #ifndef KEYPAD_READER_H
 #define KEYPAD_READER_H
@@ -19,4 +18,4 @@ private:
     Keypad keypad;
 };
 
-#endif // KEYPAD_READER_H
+#endif
