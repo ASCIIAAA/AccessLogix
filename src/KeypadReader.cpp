@@ -9,8 +9,8 @@ KeypadReader::KeypadReader() :
         {'7', '8', '9', 'C'},
         {'*', '0', '#', 'D'}
     },
-    rowPins{9, 8, 7, 6}, 
-    colPins{5, 4, 3, 2}, 
+    colPins{0, 8, 7, 6}, 
+    rowPins{A0,A1,A2,A3}, 
     keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS)
 {}
 

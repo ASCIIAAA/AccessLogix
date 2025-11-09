@@ -5,7 +5,7 @@
 
 // Define the pins here, as they are specific to the hardware this class controls
 #define SS_PIN 10
-#define RST_PIN 9
+#define RST_PIN MFRC522::UNUSED_PIN
 
 // Constructor: Initializes the MFRC522 object with the correct pins
 RFIDReader::RFIDReader() : mfrc522(SS_PIN, RST_PIN) {
