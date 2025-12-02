@@ -12,5 +12,5 @@ private:
 public:
     UserDB();
     void init(); 
-    User* findUser(String scannedUid);
+    User* findUser(const char* scannedUid);
 };

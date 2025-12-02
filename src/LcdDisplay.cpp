@@ -19,7 +19,8 @@ void LcdDisplay::showMessage(const char* line1, const char* line2) {
     lcd.print(line2);
 }
 
-void LcdDisplay::showMessage(String line1, String line2) {
+// NEW Implementation for Flash Strings
+void LcdDisplay::showMessage(const __FlashStringHelper* line1, const __FlashStringHelper* line2) {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(line1);

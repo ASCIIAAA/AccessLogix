@@ -11,5 +11,5 @@ private:
 public:
     Logger();
     void init();
-    void logAccess(User* user, String status, String timeStr);
+    void logAccess(User* user, const char* status, const char* timeStr);
 };

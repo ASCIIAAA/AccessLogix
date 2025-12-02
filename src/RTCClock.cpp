@@ -1,7 +1,6 @@
 #include "RTCClock.h"
 
-RTCClock::RTCClock() {
-}
+RTCClock::RTCClock() {}
 
 bool RTCClock::init() {
     if (!rtc.begin()) return false;
@@ -11,9 +10,9 @@ bool RTCClock::init() {
     return true;
 }
 
-String RTCClock::getFormattedTime() {
+void RTCClock::getFormattedTime(char* buffer) {
     DateTime now = rtc.now();
-    char timeBuffer[20];
-    sprintf(timeBuffer, "%02d/%02d %02d:%02d:%02d", now.day(), now.month(), now.hour(), now.minute(), now.second());
-    return String(timeBuffer);
+    // Efficiently format directly into the buffer
+    sprintf(buffer, "%02d/%02d %02d:%02d:%02d", 
+            now.day(), now.month(), now.hour(), now.minute(), now.second());
 }

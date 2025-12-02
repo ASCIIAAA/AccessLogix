@@ -9,9 +9,12 @@ public:
     LcdDisplay();
     void init();
     void clear();
-    // Changed String to const char* to save RAM
+    
+    // Normal char* support
     void showMessage(const char* line1, const char* line2);
-    void showMessage(String line1, String line2); // Overload for String objects
+    
+    // NEW: Support for F() macro strings to save RAM
+    void showMessage(const __FlashStringHelper* line1, const __FlashStringHelper* line2);
 
 private:
     LiquidCrystal_I2C lcd; 

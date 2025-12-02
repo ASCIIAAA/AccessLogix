@@ -7,24 +7,23 @@
 #include "UserDB.h"
 #include "Logger.h"
 
-enum SystemState {
-    WAITING_FOR_CARD,
-    WAITING_FOR_PASS,
-    ACCESS_GRANTED,
-    ACCESS_DENIED
-};
+// Globals
+char uidBuffer[13];      
+char timeBuffer[20];     
+char enteredPass[10]; 
+int passIndex = 0;  
 
-SystemState currentState = WAITING_FOR_CARD;
+// Objects
 RFIDReader rfid;
 LcdDisplay lcd;
 RTCClock rtc;
 KeypadReader keypad;
 UserDB userDB;
 Logger logger;
-
 User* currentUser = nullptr;
-char enteredPass[10]; // Replaced String with Char Array
-int passIndex = 0;    // Tracks current position in password
+
+enum SystemState { WAITING_FOR_CARD, WAITING_FOR_PASS, ACCESS_GRANTED, ACCESS_DENIED };
+SystemState currentState = WAITING_FOR_CARD;
 
 void signal(bool success) {
     if (success) {
@@ -48,25 +47,24 @@ void signal(bool success) {
 
 void resetSystem() {
     currentUser = nullptr;
-    // Reset password buffer
     memset(enteredPass, 0, sizeof(enteredPass));
     passIndex = 0;
-    
     currentState = WAITING_FOR_CARD;
-    lcd.showMessage("System Ready", "Scan Card...");
+    
+    // UPDATED: Using F() macro
+    lcd.showMessage(F("System Ready"), F("Scan Card..."));
     Serial.println(F("\n--- WAITING FOR CARD ---"));
 }
 
 void setup() {
     Serial.begin(115200);
-    delay(2000); 
-    
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_LED_GREEN, OUTPUT);
     pinMode(PIN_LED_RED, OUTPUT);
 
     lcd.init();
-    lcd.showMessage("Booting...", "System Init");
+    // UPDATED: Using F() macro
+    lcd.showMessage(F("Booting..."), F("System Init"));
     
     rtc.init();
     rfid.init();
@@ -74,18 +72,17 @@ void setup() {
     logger.init(); 
 
     Serial.println(F("System Initialized."));
-    delay(1000);
     resetSystem();
 }
 
 void loop() {
     switch (currentState) {
         case WAITING_FOR_CARD: {
-            String uid = rfid.readCard();
-            if (uid.length() > 0) {
+            if (rfid.readCard(uidBuffer, sizeof(uidBuffer))) {
                 Serial.print(F("Card Scanned: "));
-                Serial.println(uid);
-                currentUser = userDB.findUser(uid);
+                Serial.println(uidBuffer);
+                
+                currentUser = userDB.findUser(uidBuffer);
 
                 if (currentUser != nullptr) {
                     if (currentUser->isActive()) {
@@ -93,26 +90,32 @@ void loop() {
                         Serial.println(currentUser->getName());
                         
                         lcd.clear();
+                        // Mix of F() and normal variables works because print handles both
                         lcd.showMessage("User Found:", currentUser->getName());
                         delay(1000);
-                        lcd.showMessage("Enter Pass:", "Press * when done");
+                        lcd.showMessage(F("Enter Pass:"), F("Press * when done"));
                         
                         currentState = WAITING_FOR_PASS;
-                        // Reset password logic
                         passIndex = 0;
                         memset(enteredPass, 0, sizeof(enteredPass));
                     } else {
-                        Serial.println(F("User Inactive/Blocked"));
-                        lcd.showMessage("Access Denied", "Card Blocked");
-                        logger.logAccess(currentUser, "DENIED_BLOCKED", rtc.getFormattedTime());
+                        Serial.println(F("User Inactive"));
+                        lcd.showMessage(F("Access Denied"), F("Card Blocked"));
+                        
+                        rtc.getFormattedTime(timeBuffer);
+                        logger.logAccess(currentUser, "DENIED_BLOCKED", timeBuffer);
+                        
                         signal(false);
                         delay(2000);
                         resetSystem();
                     }
                 } else {
                     Serial.println(F("Unknown Card"));
-                    lcd.showMessage("Unknown Card", "Access Denied");
-                    logger.logAccess(nullptr, "DENIED_UNKNOWN", rtc.getFormattedTime());
+                    lcd.showMessage(F("Unknown Card"), F("Access Denied"));
+                    
+                    rtc.getFormattedTime(timeBuffer);
+                    logger.logAccess(nullptr, "DENIED_UNKNOWN", timeBuffer);
+                    
                     signal(false);
                     delay(2000);
                     resetSystem();
@@ -125,33 +128,23 @@ void loop() {
             char key = keypad.getKey();
             if (key) {
                 if (key == '*') {
-                    Serial.println(F("Verifying Password..."));
-                    // Pass the char array to checkPassword
                     if (currentUser->checkPassword(enteredPass)) {
                         currentState = ACCESS_GRANTED;
                     } else {
                         currentState = ACCESS_DENIED;
                     }
                 } else if (key == '#') {
-                    // Clear Password
                     passIndex = 0;
                     memset(enteredPass, 0, sizeof(enteredPass));
-                    lcd.showMessage("Pass Cleared", "Enter Again + *");
+                    lcd.showMessage(F("Pass Cleared"), F("Enter Again + *"));
                 } else {
-                    // Check buffer overflow
                     if (passIndex < 9) {
                         enteredPass[passIndex] = key;
                         passIndex++;
-                        enteredPass[passIndex] = '\0'; // Ensure null termination
+                        enteredPass[passIndex] = '\0';
                         
+                        lcd.showMessage("Pass:", "Processing...");
                         Serial.print(F("*"));
-                        
-                        // Manually build mask string
-                        char mask[10];
-                        for(int i=0; i<passIndex; i++) mask[i] = '*';
-                        mask[passIndex] = '\0';
-                        
-                        lcd.showMessage("Pass:", mask);
                     }
                 }
             }
@@ -160,8 +153,11 @@ void loop() {
 
         case ACCESS_GRANTED: {
             Serial.println(F("Access Granted"));
-            lcd.showMessage("Access Granted", "Welcome!");
-            logger.logAccess(currentUser, "GRANTED", rtc.getFormattedTime());
+            lcd.showMessage(F("Access Granted"), F("Welcome!"));
+            
+            rtc.getFormattedTime(timeBuffer);
+            logger.logAccess(currentUser, "GRANTED", timeBuffer);
+            
             signal(true);
             delay(3000);
             resetSystem();
@@ -170,8 +166,11 @@ void loop() {
 
         case ACCESS_DENIED: {
             Serial.println(F("Wrong Password"));
-            lcd.showMessage("Wrong Password", "Access Denied");
-            logger.logAccess(currentUser, "DENIED_PASSWORD", rtc.getFormattedTime());
+            lcd.showMessage(F("Wrong Password"), F("Access Denied"));
+            
+            rtc.getFormattedTime(timeBuffer);
+            logger.logAccess(currentUser, "DENIED_PASSWORD", timeBuffer);
+            
             signal(false);
             delay(2000);
             resetSystem();

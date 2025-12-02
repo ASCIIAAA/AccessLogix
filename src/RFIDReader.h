@@ -9,7 +9,8 @@ class RFIDReader {
 public:
     RFIDReader();
     void init();
-    String readCard(); // Returns the 10-char UID string if present
+    // CHANGED: Returns true if card found, puts ID into 'buffer'
+    bool readCard(char* buffer, byte maxLen); 
     
 private:
     SoftwareSerial rfidSerial;

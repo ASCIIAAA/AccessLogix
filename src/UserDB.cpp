@@ -1,34 +1,35 @@
 #include "UserDB.h"
+#include <avr/pgmspace.h>
 
 UserDB::UserDB() {
     userCount = 0;
 }
 
 void UserDB::init() {
-    // ROLES: "A"=Admin, "P"=Prof, "S"=Student
-    // NAMES: Must be max 12 letters!
+    // We use setFromFlash with PSTR() macro.
+    // PSTR("...") stores the string in Flash memory and returns a pointer to it.
     
     // 1. Ex-Student
-    users[0] = User("570064A276", "Ex-Student", "S", "", false); 
+    users[0].setFromFlash(PSTR("570064A276"), PSTR("Ex-Student"), PSTR("S"), PSTR(""), false);
 
     // 2. Admin 
-    users[1] = User("570066B113", "Ananya", "A", "A57845", true);
+    users[1].setFromFlash(PSTR("570066B113"), PSTR("Ananya"), PSTR("A"), PSTR("A57845"), true);
 
     // 3. Professor 
-    users[2] = User("570066AF3E", "Prof. Sonali", "P", "B6501", true);
+    users[2].setFromFlash(PSTR("570066AF3E"), PSTR("Prof. Sonali"), PSTR("P"), PSTR("B6501"), true);
 
     // 4. Student 
-    users[3] = User("570067BA4D", "Aditi", "S", "D9877", true);
+    users[3].setFromFlash(PSTR("570067BA4D"), PSTR("Aditi"), PSTR("S"), PSTR("D9877"), true);
 
     // 5. Student 
-    users[4] = User("5700657DA1", "Anushka", "S", "D8709", true);
+    users[4].setFromFlash(PSTR("5700657DA1"), PSTR("Anushka"), PSTR("S"), PSTR("D8709"), true);
     
     userCount = 5;
 }
 
-User* UserDB::findUser(String scannedUid) {
+User* UserDB::findUser(const char* scannedUid) {
     for(int i = 0; i < userCount; i++) {
-        if(scannedUid.equalsIgnoreCase(users[i].getUid())) {
+        if(strcasecmp(scannedUid, users[i].getUid()) == 0) {
             return &users[i];
         }
     }
