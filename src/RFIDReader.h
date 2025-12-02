@@ -1,25 +1,18 @@
-// include/RFIDReader.h
-
 #ifndef RFID_READER_H
 #define RFID_READER_H
 
-// These two includes are required here
-#include <SPI.h>
-#include <MFRC522.h>
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+#include "config.h"
 
 class RFIDReader {
 public:
-    RFIDReader(); // Constructor
+    RFIDReader();
     void init();
-    bool readCard();
-    void haltCard(); 
-    void dumpVersionToSerial();
-    void printUID(byte *buffer, byte bufferSize);
-    byte* getUID();
-    byte getUIDSize();
-
+    String readCard(); // Returns the 10-char UID string if present
+    
 private:
-    MFRC522 mfrc522; // The MFRC522 object is a member of the class
+    SoftwareSerial rfidSerial;
 };
 
-#endif // RFID_READER_H
+#endif

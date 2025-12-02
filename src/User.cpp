@@ -1,42 +1,36 @@
-// src/User.cpp
-
 #include "User.h"
-#include <Arduino.h> // Necessary for String and Serial functions
+#include <string.h>
 
-// Default Constructor Definition
-// Initializes the user as inactive
-user::user() {
-    active = false;
+User::User() {
+    this->active = false;
+    uid[0] = '\0';
+    name[0] = '\0';
+    role[0] = '\0';
+    password[0] = '\0';
 }
 
-// Parameterized Constructor Definition (using Member Initializer List)
-// This correctly assigns parameters to class members (this->uid = uid;)
-user::user(String uid, String name, String role) 
-    : uid(uid), name(name), role(role) 
-{
-    active = true;
+User::User(const char* uid, const char* name, const char* role, const char* password, bool active) {
+    // Copy data safely into fixed buffers
+    strncpy(this->uid, uid, sizeof(this->uid));
+    strncpy(this->name, name, sizeof(this->name));
+    strncpy(this->role, role, sizeof(this->role));
+    strncpy(this->password, password, sizeof(this->password));
+    this->active = active;
 }
 
-// Getter for UID
-String user::getUid() {
-    return uid;
+const char* User::getUid() { return uid; }
+const char* User::getName() { return name; }
+const char* User::getRole() { return role; }
+
+// FIX: Changed 'String' to 'const char*' to match the header
+bool User::checkPassword(const char* inputPass) {
+    // Compare two C-strings (returns 0 if they are equal)
+    return strcmp(this->password, inputPass) == 0;
 }
 
-// Getter for Name
-String user::getName() {
-    return name;
-} 
+bool User::isActive() { return active; }
 
-// Utility function to print user details
-void user::printdets() {
-    if (active) {
-        Serial.println("-------------------");
-        Serial.print("User ID:  ");
-        Serial.println(uid);
-        Serial.print("Name:     ");
-        Serial.println(name);
-        Serial.print("Role:     ");
-        Serial.println(role);
-        Serial.println("-------------------");
-    }
+bool User::isAdmin() {
+    // Check if the first letter of the role is 'A' (for Admin)
+    return role[0] == 'A'; 
 }

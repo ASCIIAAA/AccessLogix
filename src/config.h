@@ -1,8 +1,23 @@
 #pragma once
 
-#define USER_DB_FILE "users.txt"
-#define LOG_FILE "logs.csv"
-#define RFID_SS_PIN 10
-#define RFID_RST_PIN 9
-#define GSM_RX_PIN 7
-#define GSM_TX_PIN 8
+// --- Hardware Pins ---
+#define PIN_BUZZER    3
+#define PIN_LED_GREEN 2
+#define PIN_LED_RED   5
+
+// SD Card
+#define PIN_SD_CS     4
+
+// EM-18 RFID (SoftwareSerial)
+#define PIN_RFID_RX   10
+#define PIN_RFID_TX   11 // Not connected, but needed for constructor
+
+// Keypad
+// COLS: 9, 8, 7, 6
+// ROWS: A0, A1, A2, A3
+
+// --- Settings ---
+#define LOG_FILENAME "access.csv"
+#define ADMIN_ROLE "Admin"
+#define PROF_ROLE "Professor"
+#define STUDENT_ROLE "Student"

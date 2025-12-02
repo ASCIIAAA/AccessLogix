@@ -1,13 +1,15 @@
-#ifndef LOGGER_H
-#define LOGGER_H
-
+#pragma once
 #include <Arduino.h>
+#include <SD.h>
+#include "config.h"
+#include "User.h"
 
 class Logger {
-public:
-    void setup();
-    void logInfo(const char* message);
-    void logError(const char* message);
-};
+private:
+    bool sdAvailable;
 
-#endif  
+public:
+    Logger();
+    void init();
+    void logAccess(User* user, String status, String timeStr);
+};

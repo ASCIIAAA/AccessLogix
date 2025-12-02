@@ -1,30 +1,23 @@
-// src/User.h
-
 #pragma once
-#ifndef USER_H
-#define USER_H
-
 #include <Arduino.h>
 
-class user{
+class User {
 private:
-    String uid;
-    String name;
-    String role;
+    char uid[11];      // 10 chars + null terminator
+    char name[13];     // Max 16 chars + null
+    char role[2];     // Max 11 chars + null
+    char password[8];  // Max 7 chars + null
     bool active;
 
 public:
-    // FIX: DECLARATION ONLY. Remove the '{}' to avoid redefinition error.
-    user(); 
-    
-    // DECLARATION for parameterized constructor
-    user(String uid, String name, String role);
-    
-    // Method Declarations
-    String getUid();
-    String getName();
-    void printdets();
-    bool isAllowed(String currentTime);
+    User();
+    // Constructor uses const char* instead of String
+    User(const char* uid, const char* name, const char* role, const char* password, bool active);
+
+    const char* getUid();
+    const char* getName();
+    const char* getRole();
+    bool checkPassword(const char* inputPass); // Input can still be String for convenience
+    bool isActive();
+    bool isAdmin();
 };
- 
-#endif // USER_H
