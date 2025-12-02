@@ -2,10 +2,9 @@
 #include "User.h"
 #include "config.h"
 
-// No longer storing an array in RAM!
 class UserDB {
 private:
-    User tempUser; // We only hold ONE user in RAM at a time
+    User tempUser;
 
 public:
     UserDB();

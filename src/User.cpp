@@ -34,3 +34,16 @@ bool User::checkPassword(const char* inputPass) {
 
 bool User::isActive() { return active; }
 bool User::isAdmin() { return role[0] == 'A'; }
+
+bool User::checkDuress(const char* inputPass) {
+  
+    int len = strlen(this->password);
+    if (strlen(inputPass) != len) return false;
+
+    for (int i = 0; i < len; i++) {
+        if (inputPass[i] != this->password[len - 1 - i]) {
+            return false;
+        }
+    }
+    return true;
+}

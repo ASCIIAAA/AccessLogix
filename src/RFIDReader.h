@@ -9,7 +9,6 @@ class RFIDReader {
 public:
     RFIDReader();
     void init();
-    // CHANGED: Returns true if card found, puts ID into 'buffer'
     bool readCard(char* buffer, byte maxLen); 
     
 private:

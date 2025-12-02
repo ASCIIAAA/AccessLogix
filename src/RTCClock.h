@@ -7,8 +7,8 @@ class RTCClock {
 public:
     RTCClock();
     bool init();
-    // CHANGED: Write time to a provided variable, don't return a new String
     void getFormattedTime(char* buffer);
+    uint8_t getHour(); 
 
 private:
     RTC_DS3231 rtc;

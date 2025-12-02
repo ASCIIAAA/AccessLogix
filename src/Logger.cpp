@@ -5,7 +5,6 @@ Logger::Logger() {
 }
 
 void Logger::init() {
-    // F(...) macro moves text to Flash memory, saving RAM
     Serial.print(F("Initializing SD card..."));
     pinMode(PIN_SD_CS, OUTPUT);
     
@@ -18,7 +17,7 @@ void Logger::init() {
     sdAvailable = true;
 
     if (!SD.exists(LOG_FILENAME)) {
-        File dataFile = SD.open(LOG_FILENAME, FILE_WRITE);
+        File dataFile = SD.open(LOG_FILENAME,FILE_WRITE);
         if (dataFile) {
             dataFile.println(F("Time,UID,Name,Role,Status"));
             dataFile.close();
@@ -29,7 +28,6 @@ void Logger::init() {
 void Logger::logAccess(User* user, const char* status, const char* timeStr) {
     if (!sdAvailable) return;
 
-    // Open, write, and close immediately to free buffer memory
     File dataFile = SD.open(LOG_FILENAME, FILE_WRITE);
     if (dataFile) {
         dataFile.print(timeStr);
@@ -44,7 +42,7 @@ void Logger::logAccess(User* user, const char* status, const char* timeStr) {
             dataFile.print(F("UNKNOWN,-,-"));
         }
         dataFile.print(F(","));
-        dataFile.println(status); // Works fine with const char*
+        dataFile.println(status);
         dataFile.close();
         
         Serial.println(F("Log saved to SD."));

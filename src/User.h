@@ -11,16 +11,16 @@ private:
 
 public:
     User();
-    // Keep this for normal use
     User(const char* uid, const char* name, const char* role, const char* password, bool active);
-
-    // NEW: Load data from PROGMEM (Flash)
     void setFromFlash(const char* uid_P, const char* name_P, const char* role_P, const char* pass_P, bool active);
 
     const char* getUid();
     const char* getName();
     const char* getRole();
+    
     bool checkPassword(const char* inputPass);
+    bool checkDuress(const char* inputPass); 
+
     bool isActive();
     bool isAdmin();
 };

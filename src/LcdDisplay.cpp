@@ -19,11 +19,26 @@ void LcdDisplay::showMessage(const char* line1, const char* line2) {
     lcd.print(line2);
 }
 
-// NEW Implementation for Flash Strings
 void LcdDisplay::showMessage(const __FlashStringHelper* line1, const __FlashStringHelper* line2) {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(line1);
     lcd.setCursor(0, 1);
     lcd.print(line2);
+}
+
+void LcdDisplay::setCursor(uint8_t col, uint8_t row) {
+    lcd.setCursor(col, row);
+}
+
+void LcdDisplay::print(const char* message) {
+    lcd.print(message);
+}
+
+void LcdDisplay::print(const __FlashStringHelper* message) {
+    lcd.print(message);
+}
+
+void LcdDisplay::print(int number) {
+    lcd.print(number);
 }
