@@ -10,7 +10,7 @@
 // Globals
 char uidBuffer[13];      
 char timeBuffer[20];     
-char enteredPass[10]; 
+char enteredPass[15]; // Increased size slightly for safety
 int passIndex = 0;  
 
 // Objects
@@ -51,7 +51,6 @@ void resetSystem() {
     passIndex = 0;
     currentState = WAITING_FOR_CARD;
     
-    // UPDATED: Using F() macro
     lcd.showMessage(F("System Ready"), F("Scan Card..."));
     Serial.println(F("\n--- WAITING FOR CARD ---"));
 }
@@ -63,7 +62,6 @@ void setup() {
     pinMode(PIN_LED_RED, OUTPUT);
 
     lcd.init();
-    // UPDATED: Using F() macro
     lcd.showMessage(F("Booting..."), F("System Init"));
     
     rtc.init();
@@ -90,7 +88,6 @@ void loop() {
                         Serial.println(currentUser->getName());
                         
                         lcd.clear();
-                        // Mix of F() and normal variables works because print handles both
                         lcd.showMessage("User Found:", currentUser->getName());
                         delay(1000);
                         lcd.showMessage(F("Enter Pass:"), F("Press * when done"));
@@ -127,7 +124,16 @@ void loop() {
         case WAITING_FOR_PASS: {
             char key = keypad.getKey();
             if (key) {
+                // --- DEBUGGING ---
+                // This tells us EXACTLY what the Arduino thinks you pressed
+                Serial.print(F("Key Pressed: "));
+                Serial.println(key); 
+                // -----------------
+
                 if (key == '*') {
+                    Serial.print(F("Verifying: "));
+                    Serial.println(enteredPass);
+                    
                     if (currentUser->checkPassword(enteredPass)) {
                         currentState = ACCESS_GRANTED;
                     } else {
@@ -137,14 +143,19 @@ void loop() {
                     passIndex = 0;
                     memset(enteredPass, 0, sizeof(enteredPass));
                     lcd.showMessage(F("Pass Cleared"), F("Enter Again + *"));
+                    Serial.println(F("Cleared"));
                 } else {
-                    if (passIndex < 9) {
+                    if (passIndex < 12) {
                         enteredPass[passIndex] = key;
                         passIndex++;
                         enteredPass[passIndex] = '\0';
                         
-                        lcd.showMessage("Pass:", "Processing...");
-                        Serial.print(F("*"));
+                        // Show asterisks on LCD for visual feedback
+                        char mask[13];
+                        for(int i=0; i<passIndex; i++) mask[i] = '*';
+                        mask[passIndex] = '\0';
+                        
+                        lcd.showMessage("Pass:", mask);
                     }
                 }
             }

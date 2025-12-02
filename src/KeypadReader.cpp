@@ -7,8 +7,7 @@ KeypadReader::KeypadReader() :
         {'7', '8', '9', 'C'},
         {'*', '0', '#', 'D'}
     },
-    // FIX: Initialized rowPins BEFORE colPins to match the order in .h file
-    rowPins{A0,A1,A2,A3}, 
+    rowPins{A3, A2, A1, A0}, 
     colPins{9, 8, 7, 6}, 
     keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS)
 {}

@@ -2,15 +2,16 @@
 
 // --- Hardware Pins ---
 #define PIN_BUZZER    3
-#define PIN_LED_GREEN 2
+#define PIN_LED_GREEN 3
 #define PIN_LED_RED   5
 
-// SD Card
-#define PIN_SD_CS     4
+// --- PIN SWAP FIX ---
+// SD Card CS *MUST* be on Pin 10 for Arduino Uno SPI to stay stable
+#define PIN_SD_CS     10 
 
-// EM-18 RFID (SoftwareSerial)
-#define PIN_RFID_RX   10
-#define PIN_RFID_TX   11 // Not connected, but needed for constructor
+// EM-18 RFID (Moved to Pin 4 to avoid conflict)
+#define PIN_RFID_RX   4
+#define PIN_RFID_TX   2 // Dummy pin (shared with LED, we don't use TX anyway)
 
 // Keypad
 // COLS: 9, 8, 7, 6
