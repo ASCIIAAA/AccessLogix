@@ -156,7 +156,8 @@ void loop() {
                         passIndex = 0;
                         memset(enteredPass, 0, sizeof(enteredPass));
                         biometricStartTime = 0; 
-                    } else {
+                    } 
+                    else {
                         Serial.println(F("User Inactive"));
                         lcd.showMessage(F("Access Denied"), F("Card Blocked"));
                         rtc.getFormattedTime(timeBuffer);
@@ -165,7 +166,8 @@ void loop() {
                         delay(2000);
                         resetSystem();
                     }
-                } else {
+                } 
+                else {
                     Serial.println(F("Unknown Card"));
                     lcd.showMessage(F("Unknown Card"), F("Access Denied"));
                     rtc.getFormattedTime(timeBuffer);
@@ -250,7 +252,8 @@ void loop() {
             if (strcmp(currentUser->getRole(), "S") == 0) {
                 isStudentInside = true;
                 lastActivityTime = millis();
-            } else if (currentUser->isAdmin()) {
+            } 
+            else if (currentUser->isAdmin()) {
                 isStudentInside = false;
                 studentTracker[0] = false; 
                 studentTracker[1] = false; 

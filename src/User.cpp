@@ -15,7 +15,7 @@ User::User(const char* uid, const char* name, const char* role, const char* pass
     this->active = active;
 }
 
-// NEW: Reads strings directly from Flash memory
+// Reads strings directly from Flash memory
 void User::setFromFlash(const char* uid_P, const char* name_P, const char* role_P, const char* pass_P, bool active) {
     strncpy_P(this->uid, uid_P, sizeof(this->uid));
     strncpy_P(this->name, name_P, sizeof(this->name));

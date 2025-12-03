@@ -38,7 +38,8 @@ void Logger::logAccess(User* user, const char* status, const char* timeStr) {
             dataFile.print(user->getName());
             dataFile.print(F(","));
             dataFile.print(user->getRole());
-        } else {
+        } 
+        else {
             dataFile.print(F("UNKNOWN,-,-"));
         }
         dataFile.print(F(","));
@@ -46,7 +47,8 @@ void Logger::logAccess(User* user, const char* status, const char* timeStr) {
         dataFile.close();
         
         Serial.println(F("Log saved to SD."));
-    } else {
+    } 
+    else {
         Serial.println(F("Error opening log file"));
     }
 }

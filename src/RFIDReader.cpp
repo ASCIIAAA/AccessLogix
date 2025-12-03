@@ -13,7 +13,7 @@ bool RFIDReader::readCard(char* buffer, byte maxLen) {
         
         int count = rfidSerial.readBytes(tempBuf, 12); 
         
-        if (count >= 10) {
+        if (count >= 10) { 
             strncpy(buffer, tempBuf, 10);
             buffer[10] = '\0'; 
             

@@ -7,7 +7,7 @@ const char u1_name[] PROGMEM = "Ex-Student";
 const char u1_role[] PROGMEM = "S"; const char u1_pass[] PROGMEM = "";
 
 const char u2_uid[] PROGMEM = "570066B113"; 
-const char u2_name[] PROGMEM = "Ananya";       const char u2_role[] PROGMEM = "A"; const char u2_pass[] PROGMEM = "A57845";
+const char u2_name[] PROGMEM = "Ananya"; const char u2_role[] PROGMEM = "A"; const char u2_pass[] PROGMEM = "A57845";
 
 const char u3_uid[] PROGMEM = "570066AF3E"; 
 const char u3_name[] PROGMEM = "Prof. Sonali"; const char u3_role[] PROGMEM = "P"; const char u3_pass[] PROGMEM = "B6501";
